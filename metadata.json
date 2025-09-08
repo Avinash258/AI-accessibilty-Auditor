@@ -1,0 +1,6 @@
+{
+  "name": "AI Accessibility Auditor",
+  "description": "An AI-powered tool that simulates an accessibility audit of a web page, providing a detailed report on potential issues based on axe-core and WCAG principles.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
