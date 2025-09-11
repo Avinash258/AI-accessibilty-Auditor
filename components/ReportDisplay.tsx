@@ -4,7 +4,11 @@ import ReportSection from './ReportSection';
 import { exportAsJson, exportAsHtml, exportAsCsv, exportAsPdf, exportAsWord } from '../services/reportExporter';
 import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, ArrowDownTrayIcon, ChevronDownIcon } from './icons';
 
-const ReportDisplay: React.FC<{ report: AccessibilityReport, isInitiallyOpen?: boolean }> = ({ report, isInitiallyOpen = false }) => {
+const ReportDisplay: React.FC<{ 
+    report: AccessibilityReport, 
+    isInitiallyOpen?: boolean,
+    onShowVisualAid: (url: string, description: string) => void;
+}> = ({ report, isInitiallyOpen = false, onShowVisualAid }) => {
     const { violations, incomplete, passes, url, timestamp } = report;
     const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
     const downloadMenuRef = useRef<HTMLDivElement>(null);
@@ -134,8 +138,8 @@ const ReportDisplay: React.FC<{ report: AccessibilityReport, isInitiallyOpen?: b
                     ))}
                 </div>
 
-                <ReportSection title="Violations" issues={violations} defaultOpen={true} />
-                <ReportSection title="Needs Review" issues={incomplete} />
+                <ReportSection title="Violations" issues={violations} defaultOpen={true} onShowVisualAid={onShowVisualAid} />
+                <ReportSection title="Needs Review" issues={incomplete} onShowVisualAid={onShowVisualAid} />
                 <ReportSection title="Passed Tests" issues={passes} />
             </div>
         </details>

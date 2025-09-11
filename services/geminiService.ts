@@ -1,6 +1,7 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
-import type { AccessibilityReport, AuditRule } from '../types';
+import type { AccessibilityReport, AuditRule, AccessibilityIssue, FixSuggestion } from '../types';
 import { ImpactLevel } from "../types";
 
 if (!process.env.API_KEY) {
@@ -255,5 +256,84 @@ Generate a representative list of about 20-30 of the most common and impactful r
             throw new Error("The AI model returned invalid JSON for the rules list.");
         }
         throw new Error("The AI model failed to generate a list of audit rules.");
+    }
+}
+
+export type { FixSuggestion };
+
+export async function getFixSuggestion(issue: AccessibilityIssue): Promise<FixSuggestion> {
+    if (!issue.htmlElementSnippet) {
+        throw new Error("HTML snippet is required to generate a suggestion.");
+    }
+    
+    // 1. Generate text part: suggested code, image prompt, caption
+    const suggestionPromptSchema = {
+        type: Type.OBJECT,
+        properties: {
+            suggestedCode: { type: Type.STRING, description: 'The corrected HTML snippet that resolves the accessibility issue.' },
+            imageGenPrompt: { type: Type.STRING, description: 'A detailed, descriptive prompt for an image generation model to create a visual representation of the UI issue. The prompt should describe a simple, clean UI render of the HTML snippet, with clear annotations (like red circles or arrows) highlighting the specific accessibility problem. Be literal and descriptive for the AI.' },
+            imageCaption: { type: Type.STRING, description: 'A brief, user-facing caption that explains what the generated image is showing and how it relates to the issue.' },
+        },
+        required: ['suggestedCode', 'imageGenPrompt', 'imageCaption']
+    };
+
+    const textPrompt = `You are an expert web developer specializing in accessibility remediation.
+    
+    An accessibility audit found the following issue:
+    - Description: ${issue.description}
+    - Help Text: ${issue.help}
+    - Problematic HTML Snippet: \`\`\`html\n${issue.htmlElementSnippet}\n\`\`\`
+
+    Your task is to:
+    1.  Provide a corrected version of the HTML snippet that fixes the issue.
+    2.  Write a detailed, descriptive prompt for an image generation AI (like Imagen) to create a clear visual example of this issue. The image should be a simple, clean UI representation of the element. It should visually highlight what is wrong. For example, use red boxes or arrows to point out missing elements or bad contrast. The prompt should be self-contained and not refer to this conversation.
+    3.  Write a brief, user-facing caption that explains what the generated image is showing.
+
+    Provide the response as a single, valid JSON object conforming to the schema.`;
+
+    let suggestionParts;
+    try {
+        const textGenResponse = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: textPrompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: suggestionPromptSchema,
+                temperature: 0.2,
+            },
+        });
+        suggestionParts = JSON.parse(textGenResponse.text.trim());
+    } catch (error) {
+        console.error("Error generating text for fix suggestion:", error);
+        throw new Error("The AI model failed to generate a textual suggestion.");
+    }
+
+    // 2. Generate the image
+    try {
+        const imageResponse = await ai.models.generateImages({
+            model: 'imagen-4.0-generate-001',
+            prompt: suggestionParts.imageGenPrompt,
+            config: {
+                numberOfImages: 1,
+                outputMimeType: 'image/png',
+                aspectRatio: '1:1',
+            },
+        });
+        
+        if (!imageResponse.generatedImages || imageResponse.generatedImages.length === 0) {
+            throw new Error("Image generation returned no images.");
+        }
+
+        const base64ImageBytes = imageResponse.generatedImages[0].image.imageBytes;
+        const imageUrl = `data:image/png;base64,${base64ImageBytes}`;
+
+        return {
+            suggestedCode: suggestionParts.suggestedCode,
+            imageUrl: imageUrl,
+            imageCaption: suggestionParts.imageCaption,
+        };
+    } catch (error) {
+         console.error("Error generating image for fix suggestion:", error);
+         throw new Error("The AI model failed to generate a visual example.");
     }
 }

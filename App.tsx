@@ -10,6 +10,7 @@ import ReportDisplay from './components/ReportDisplay';
 import Loader from './components/Loader';
 import ComplianceReference from './components/ComplianceReference';
 import AuditRulesGuide from './components/AuditRulesGuide';
+import VisualAidModal from './components/VisualAidModal';
 import { ErrorIcon, BookOpenIcon, CheckCircleIcon, CubeTransparentIcon, ArrowDownTrayIcon, ChevronDownIcon, ListBulletIcon } from './components/icons';
 
 type InputMode = 'url' | 'html' | 'crawl';
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   const [isRulesGuideOpen, setIsRulesGuideOpen] = useState<boolean>(false);
   const [discoveredUrls, setDiscoveredUrls] = useState<DiscoveredUrl[]>([]);
   const [isBulkDownloadMenuOpen, setIsBulkDownloadMenuOpen] = useState(false);
+  const [visualAid, setVisualAid] = useState<{ url: string; description: string } | null>(null);
   const bulkDownloadMenuRef = useRef<HTMLDivElement>(null);
 
 
@@ -398,7 +400,12 @@ const App: React.FC = () => {
               </div>
               <div className="space-y-4">
                 {reports.map((report, index) => (
-                  <ReportDisplay key={report.timestamp} report={report} isInitiallyOpen={reports.length === 1 || index === 0} />
+                  <ReportDisplay 
+                    key={report.timestamp} 
+                    report={report} 
+                    isInitiallyOpen={reports.length === 1 || index === 0} 
+                    onShowVisualAid={(url, description) => setVisualAid({ url, description })}
+                  />
                 ))}
               </div>
             </div>
@@ -420,6 +427,7 @@ const App: React.FC = () => {
       </footer>
       {isReferenceOpen && <ComplianceReference onClose={() => setIsReferenceOpen(false)} />}
       {isRulesGuideOpen && <AuditRulesGuide compliance={compliance} onClose={() => setIsRulesGuideOpen(false)} />}
+      {visualAid && <VisualAidModal imageUrl={visualAid.url} description={visualAid.description} onClose={() => setVisualAid(null)} />}
     </div>
   );
 };

@@ -32,3 +32,10 @@ export interface AuditRule {
 }
 
 export type DownloadFormat = 'json' | 'html' | 'csv' | 'pdf' | 'word';
+
+// New interface for the fix suggestion feature
+export interface FixSuggestion {
+    suggestedCode: string;
+    imageUrl: string;
+    imageCaption: string;
+}

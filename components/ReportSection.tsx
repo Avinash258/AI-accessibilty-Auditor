@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { AccessibilityIssue } from '../types';
 import IssueCard from './IssueCard';
@@ -8,9 +7,10 @@ interface ReportSectionProps {
   title: string;
   issues: AccessibilityIssue[];
   defaultOpen?: boolean;
+  onShowVisualAid?: (url: string, description: string) => void;
 }
 
-const ReportSection: React.FC<ReportSectionProps> = ({ title, issues, defaultOpen = false }) => {
+const ReportSection: React.FC<ReportSectionProps> = ({ title, issues, defaultOpen = false, onShowVisualAid }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   if (issues.length === 0) {
@@ -54,7 +54,7 @@ const ReportSection: React.FC<ReportSectionProps> = ({ title, issues, defaultOpe
         <div className="bg-white dark:bg-dark-card p-4">
           <div className="space-y-4">
             {issues.map((issue, index) => (
-              <IssueCard key={`${issue.id}-${index}`} issue={issue} />
+              <IssueCard key={`${issue.id}-${index}`} issue={issue} onShowVisualAid={onShowVisualAid} />
             ))}
           </div>
         </div>
