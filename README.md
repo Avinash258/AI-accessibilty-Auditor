@@ -1,11 +1,11 @@
 # AI Accessibility Auditor
 
-AI-powered **WCAG / ADA / Section 508** audits with multi-format reports â€” map pages and flows, then get actionable accessibility findings.
+AI-powered **WCAG / ADA / Section 508** audits with multi-format reports Ã¢â‚¬â€ map pages and flows, then get actionable accessibility findings.
 
 [![Powered by Google Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-blue.svg)](https://ai.google.dev/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 
-> [Portfolio](https://avinash258.github.io/Protfolio/) Â· related tooling: [TraceViewer](https://github.com/Avinash258/TraceViewer)
+> [Portfolio](https://avinash258.github.io/portfolio/) Ã‚Â· related tooling: [TraceViewer](https://github.com/Avinash258/TraceViewer)
 
 ## Overview
 
@@ -20,7 +20,7 @@ Paste a URL and receive a structured accessibility analysis driven by Google Gem
 
 ## Stack
 
-- TypeScript Â· React Â· Vite
+- TypeScript Ã‚Â· React Ã‚Â· Vite
 - Google Gemini
 - Tailwind CSS
 
@@ -42,5 +42,5 @@ Set your Gemini API key in a local `.env` (never commit secrets). See `metadata.
 
 ## Author
 
-**Avinash Sharma** â€” QA Automation Architect / Lead SDET  
-[GitHub](https://github.com/Avinash258) Â· [LinkedIn](https://www.linkedin.com/in/p-avinash-sharma-8b0203b9/) Â· [Portfolio](https://avinash258.github.io/Protfolio/)
+**Avinash Sharma** Ã¢â‚¬â€ QA Automation Architect / Lead SDET  
+[GitHub](https://github.com/Avinash258) Ã‚Â· [LinkedIn](https://www.linkedin.com/in/p-avinash-sharma-8b0203b9/) Ã‚Â· [Portfolio](https://avinash258.github.io/portfolio/)
